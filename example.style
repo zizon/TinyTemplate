@@ -1,0 +1,9 @@
+{
+    "table":{
+        "border":"dotted"
+    },
+
+    ".color-blue":{
+        "color":"blue"
+    }
+}

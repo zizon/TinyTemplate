@@ -1,0 +1,11 @@
+<html>
+    <table>
+        <tr tiny-repeat='len(data)' tiny-repeat-index='row'>
+            <td class='color-blue' tiny-data='data[row][0]'/>
+            <td tiny-number='data[row][1]'/>
+            <td tiny-percent='data[row][2]'/>
+        </tr>
+    </table>
+
+    <table tiny-bot='test_bot'/>
+</html>

@@ -164,7 +164,7 @@ class TinyStyleEngine(object):
 class TinyTemplateEngine(ContentHandler):
     
     def __init__(self,template):
-        xml.sax.parseString(template.encode(u'utf8'),self)
+        xml.sax.parseString(template,self)
     
     def startDocument(self):
         # document root dom nodes
