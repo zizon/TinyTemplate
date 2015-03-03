@@ -76,9 +76,51 @@ class TableGenerator(TinyDataDriver):
                 raise Exception(u'%s`s child should be None or List' % _ )
         return width,max_height
     
+    def _calculate_colors(self,header):
+        def copy_header(header):
+            new_header = []
+            for name,child in header:
+                if child is None:
+                    new_header.append([
+                        name,
+                        None,
+                        -1
+                    ])
+                else:
+                    new_header.append([
+                        name,
+                        copy_header(child),
+                        -1
+                    ])
+            return new_header
+        
+        # mark numbers
+        header = copy_header(header)
+        pending = header
+        index = 1
+        while len(pending) > 0:
+            new_pending = []
+            for tuple in pending:
+                tuple[2] = index
+                index = index + 1
+                if tuple[1] is not None:
+                    new_pending.extend(tuple[1])
+            pending = new_pending
+        
+        # extract colors 
+        def extract(header):
+            colors = []
+            for name,child,color in header:
+                if child is None:
+                    colors.append(color)
+                else:
+                    colors.extend(extract(child))
+            return colors
+        
+        return extract(header)
+        
     def _header_row(self,header,color=0):
         width,height = self._calculate_list_like(header)
-        colors = []
         rows = []
         
         indent = self.indent 
@@ -100,7 +142,6 @@ class TableGenerator(TinyDataDriver):
                             name
                         )
                     )
-                    colors.append(color)
                 else:
                     sub_width,sub_height = self._calculate_list_like(child)
                     cols.append(u"%s<td class='color-group-%s' %s >%s</td>" % 
@@ -117,7 +158,8 @@ class TableGenerator(TinyDataDriver):
             rows.append(u'\n'.join([u'%s<tr>' % (indent *(1+basic_indent)) ,u'\n'.join(cols),u'%s</tr>' % (indent*(1+basic_indent))]))
             process = next 
             width,height = self._calculate_list_like(next)
-
+            
+        colors = self._calculate_colors(header)
         return u'\n'.join([u'%s<thead>' % (indent*basic_indent),u'\n'.join(rows),u'%s</thead>' % (indent*basic_indent)]),colors
     
     def _eval_tiny_bot(self,node,binding):
